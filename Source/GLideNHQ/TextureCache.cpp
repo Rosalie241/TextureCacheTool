@@ -20,7 +20,10 @@ TextureCache::TextureCache(QString file)
 
 TextureCache::~TextureCache(void)
 {
-    fclose(file);
+    if (file != NULL)
+    {
+        fclose(file);
+    }
 }
 
 QList<Texture> TextureCache::GetTextures(void)
@@ -60,6 +63,7 @@ bool TextureCache::ReplaceTexture(Texture texture, QString fileName)
         int64_t newOffset = ftell(file);
         if (!overWriteMappingOffset(texture.Checksum, newOffset))
         {
+            free(info.data);
             free(textureFile.Info.data);
             fclose(inFile);
             return false;
@@ -73,6 +77,7 @@ bool TextureCache::ReplaceTexture(Texture texture, QString fileName)
 
     writeTexInfo(&textureFile.Info, file);
 
+    free(info.data);
     free(textureFile.Info.data);
     fclose(inFile);
 
